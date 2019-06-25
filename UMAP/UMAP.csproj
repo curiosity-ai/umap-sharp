@@ -1,9 +1,18 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>UMAP</RootNamespace>
     <AssemblyName>UMAP</AssemblyName>
+    <Authors />
+    <Company>Curiosity GmbH</Company>
+    <Product />
+    <Description>A C# implementation of "Uniform Manifold Approximation and Projection" (UMAP)</Description>
+    <PackageLicenseExpression>MIT License</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/curiosity-ai/umap-csharp</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/curiosity-ai/umap-csharp</RepositoryUrl>
+    <PackageTags>UMAP, kNN, ANN, approximate nearest neighbor</PackageTags>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
