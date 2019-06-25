@@ -4,6 +4,14 @@ This is a C# reimplementation of the [JavaScript version](https://github.com/PAI
 
 "Uniform Manifold Approximation and Projection (UMAP) is a dimension reduction technique that can be used for visualisation similarly to t-SNE, but also for general non-linear dimension reduction" - if you have a set of vectors representing document or entities then you might use the algorithm to reduce those vectors to two or three dimensions in order to plot them and explore clusters.
 
+## Installation
+
+Install via [NuGet](https://www.nuget.org/packages/UMAP):
+
+```
+Install-Package UMAP
+```
+
 ## Usage
 
 Instantiate a **Umap** instance, pass the array of vectors to the "InitializeFit" method, receive a recommended number of epochs to use from "InitializeFit", call the "Step" method this many times and then request the resulting (reduced dimension) vectors from the "GetEmbedding" method. The vectors passed to "InitializeFit" must all be of the same length. The vectors returned from "GetEmbedding" will be in the same order as the vectors passed to "InitializeFit" (so if you have labels relating to the source vectors then you can apply those labels to the embedding vectors).
