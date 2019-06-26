@@ -49,6 +49,9 @@ var umap = new Umap(
 	dimensions: 3
 );
 ```
+## Parallelization support
+
+This project uses a similar approach as Facebook's [fastText](https://github.com/facebookresearch/fastText) for lock-free multi-threaded optimization, by first [randomizing the order](https://github.com/curiosity-ai/umap-csharp/blob/ac636d76110f7cf8946976174c01a5609e0601eb/UMAP/Umap.cs#L291) each point is passed to the optimizer, and then, if using a thread-safe number generator, [running each optimization step multi-thredded](https://github.com/curiosity-ai/umap-csharp/blob/ac636d76110f7cf8946976174c01a5609e0601eb/UMAP/Umap.cs#L403). The assumption here is that colisions when [writing](https://github.com/curiosity-ai/umap-csharp/blob/ac636d76110f7cf8946976174c01a5609e0601eb/UMAP/Umap.cs#L424) to the projected embeddings vector will only happen at a very low probability, and will have minimum impact on the final results. 
 
 ## A complete example
 
