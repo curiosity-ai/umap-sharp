@@ -38,7 +38,7 @@ var embeddings = umap.GetEmbedding();
 | -------------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
 | `dimensions`         | The number of dimensions to project the data to (commonly 2 or 3)                  | 2                                                                                                                               |
 | `distanceFn`         | A custom distance function to use                                                  | `Umap.DistanceFunctions.Cosine`                                                                                                 |
-| `random`             | A pseudo-random-number generator for controlling stochastic processes              | An instance of `DefaultRandomGenerator` (unit tests use a fixed seed generator that disables parallelisation of the calculation |
+| `random`             | A pseudo-random-number generator for controlling stochastic processes              | `DefaultRandomGenerator.Instance` (unit tests use a fixed seed generator that disables parallelisation of the calculation       |
 | `numberOfNeighbors`  | The number of nearest neighbors to construct the fuzzy manifold in `InitializeFit` | 15                                                                                                                              |
 
 If the input vectors are all normalized and you want to project to three dimensions then you might use:
@@ -51,7 +51,9 @@ var umap = new Umap(
 ```
 ## Parallelization support
 
-This project uses a similar approach as Facebook's [fastText](https://github.com/facebookresearch/fastText) for lock-free multi-threaded optimization, by first [randomizing the order](https://github.com/curiosity-ai/umap-csharp/blob/ac636d76110f7cf8946976174c01a5609e0601eb/UMAP/Umap.cs#L291) each point is passed to the optimizer, and then, if using a thread-safe number generator, [running each optimization step multi-threaded](https://github.com/curiosity-ai/umap-csharp/blob/ac636d76110f7cf8946976174c01a5609e0601eb/UMAP/Umap.cs#L403). The assumption here is that colisions when [writing](https://github.com/curiosity-ai/umap-csharp/blob/ac636d76110f7cf8946976174c01a5609e0601eb/UMAP/Umap.cs#L424) to the projected embeddings vector will only happen at a very low probability, and will have minimum impact on the final results. 
+This project uses a similar approach as Facebook's [fastText](https://github.com/facebookresearch/fastText) for lock-free multi-threaded optimization, by first [randomizing the order](https://github.com/curiosity-ai/umap-csharp/blob/ac636d76110f7cf8946976174c01a5609e0601eb/UMAP/Umap.cs#L291) each point is passed to the optimizer, and then, if using a thread-safe number generator, [running each optimization step multi-threaded](https://github.com/curiosity-ai/umap-csharp/blob/ac636d76110f7cf8946976174c01a5609e0601eb/UMAP/Umap.cs#L403). The assumption here is that collisions when [writing](https://github.com/curiosity-ai/umap-csharp/blob/ac636d76110f7cf8946976174c01a5609e0601eb/UMAP/Umap.cs#L424) to the projected embeddings vector will only happen at a very low probability, and will have minimum impact on the final results.
+
+If it is not desirable for multiple threads to be used then `DefaultRandomGenerator.DisableThreading` may be provided as the **Umap**'s "random" constructor argument.
 
 ## A complete example
 
