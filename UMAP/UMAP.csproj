@@ -7,11 +7,11 @@
     <Authors />
     <Company>Curiosity GmbH</Company>
     <Product />
-    <Description>A C# implementation of "Uniform Manifold Approximation and Projection" (UMAP)</Description>
+    <Description>C# implementation of "Uniform Manifold Approximation and Projection" (UMAP)</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/curiosity-ai/umap-csharp</PackageProjectUrl>
     <RepositoryUrl>https://github.com/curiosity-ai/umap-csharp</RepositoryUrl>
-    <PackageTags>UMAP, kNN, ANN, approximate nearest neighbor</PackageTags>
+    <PackageTags>UMAP, embeddings projection, dimensionality reduction</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
