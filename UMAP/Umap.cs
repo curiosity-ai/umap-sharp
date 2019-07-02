@@ -25,6 +25,7 @@ namespace UMAP
         private readonly DistanceCalculation _distanceFn;
         private readonly IProvideRandomValues _random;
         private readonly int _nNeighbors;
+        private readonly ProgressReporter _progressReporter;
 
         // KNN state (can be precomputed and supplied via initializeFit)
         private int[][] _knnIndices = null;
@@ -40,12 +41,19 @@ namespace UMAP
         private float[] _embedding;
         private readonly OptimizationState _optimizationState;
 
-        public Umap(DistanceCalculation distance = null, IProvideRandomValues random = null, int dimensions = 2, int numberOfNeighbors = 15)
+        /// <summary>
+        /// The progress will be a value from 0 to 1 that indicates approximately how much of the processing has been completed
+        /// </summary>
+        public delegate void ProgressReporter(float progress);
+
+        // TODO: Custom nEpoch support
+        public Umap(DistanceCalculation distance = null, IProvideRandomValues random = null, int dimensions = 2, int numberOfNeighbors = 15, ProgressReporter progressReporter = null)
         {
             _distanceFn = distance ?? DistanceFunctions.Cosine;
             _random = random ?? DefaultRandomGenerator.Instance;
             _nNeighbors = numberOfNeighbors;
             _optimizationState = new OptimizationState { Dim = dimensions };
+            _progressReporter = progressReporter;
         }
 
         /// <summary>
@@ -58,11 +66,19 @@ namespace UMAP
             if ((_x == x) && _isInitialized)
                 return GetNEpochs();
 
+            // For large quantities of data (which is where the progress estimating is more useful), InitializeFit takes at least 80% of the total time (the calls to Step are
+            // completed much more quickly AND they naturally lend themselves to granular progress updates; one per loop compared to the recommended number of epochs)
+            ProgressReporter initializeFitProgressReporter = (_progressReporter == null) ? (progress => { }) : ScaleProgressReporter(_progressReporter, 0, 0.8f);
+
             _x = x;
             if ((_knnIndices == null) && (_knnDistances == null))
-                (_knnIndices, _knnDistances) = NearestNeighbors(x);
+            {
+                // This part of the process very roughly accounts for 1/3 of the work
+                (_knnIndices, _knnDistances) = NearestNeighbors(x, ScaleProgressReporter(initializeFitProgressReporter, 0, 0.3f));
+            }
 
-            _graph = FuzzySimplicialSet(x, _nNeighbors, _setOpMixRatio);
+            // This part of the process very roughly accounts for 2/3 of the work (the reamining work is in the Step calls)
+            _graph = FuzzySimplicialSet(x, _nNeighbors, _setOpMixRatio, ScaleProgressReporter(initializeFitProgressReporter, 0.3f, 1));
 
             var (head, tail, epochsPerSample) = InitializeSimplicialSetEmbedding();
 
@@ -112,14 +128,26 @@ namespace UMAP
         /// <summary>
         /// Compute the ``nNeighbors`` nearest points for each data point in ``X`` - this may be exact, but more likely is approximated via nearest neighbor descent.
         /// </summary>
-        internal (int[][] knnIndices, float[][] knnDistances) NearestNeighbors(float[][] x)
+        internal (int[][] knnIndices, float[][] knnDistances) NearestNeighbors(float[][] x, ProgressReporter progressReporter)
         {
             var metricNNDescent = MakeNNDescent(_distanceFn, _random);
+            progressReporter(0.05f);
             var nTrees = 5 + Round(Math.Sqrt(x.Length) / 20);
             var nIters = Math.Max(5, (int)Math.Floor(Math.Round(Math.Log(x.Length, 2))));
-            _rpForest = MakeForest(x, _nNeighbors, nTrees, _random);
+            progressReporter(0.1f);
+            var leafSize = Math.Max(10, _nNeighbors);
+            var forestProgressReporter = ScaleProgressReporter(progressReporter, 0.1f, 0.4f);
+            _rpForest = Enumerable.Range(0, nTrees)
+                .Select(i =>
+                {
+                    forestProgressReporter((float)i / nTrees);
+                    return FlattenTree(MakeTree(x, leafSize, i, _random), leafSize);
+                })
+                .ToArray();
             var leafArray = MakeLeafArray(_rpForest);
-            return metricNNDescent(x, leafArray, _nNeighbors, nIters);
+            progressReporter(0.45f);
+            var nnDescendProgressReporter = ScaleProgressReporter(progressReporter, 0.5f, 1);
+            return metricNNDescent(x, leafArray, _nNeighbors, nIters, startingIteration: (i, max) => nnDescendProgressReporter((float)i / max));
 
             // Handle python3 rounding down from 0.5 discrpancy
             int Round(double n) => (n == 0.5) ? 0 : (int)Math.Floor(Math.Round(n));
@@ -130,19 +158,28 @@ namespace UMAP
         /// to the data. This is done by locally approximating geodesic distance at each point, creating a fuzzy simplicial set for each such point, and then combining all the local fuzzy
         /// simplicial sets into a global one via a fuzzy union.
         /// </summary>
-        private SparseMatrix FuzzySimplicialSet(float[][] x, int nNeighbors, float setOpMixRatio = 1f)
+        private SparseMatrix FuzzySimplicialSet(float[][] x, int nNeighbors, float setOpMixRatio, ProgressReporter progressReporter)
         {
             var knnIndices = _knnIndices ?? new int[0][];
             var knnDistances = _knnDistances ?? new float[0][];
+            progressReporter(0.1f);
             var (sigmas, rhos) = SmoothKNNDistance(knnDistances, nNeighbors, _localConnectivity);
+            progressReporter(0.2f);
             var (rows, cols, vals) = ComputeMembershipStrengths(knnIndices, knnDistances, sigmas, rhos);
+            progressReporter(0.3f);
             var sparseMatrix = new SparseMatrix(rows, cols, vals, (x.Length, x.Length));
             var transpose = sparseMatrix.Transpose();
             var prodMatrix = sparseMatrix.PairwiseMultiply(transpose);
+            progressReporter(0.4f);
             var a = sparseMatrix.Add(transpose).Subtract(prodMatrix);
+            progressReporter(0.5f);
             var b = a.MultiplyScalar(setOpMixRatio);
+            progressReporter(0.6f);
             var c = prodMatrix.MultiplyScalar(1 - setOpMixRatio);
-            return b.Add(c);
+            progressReporter(0.7f);
+            var result = b.Add(c);
+            progressReporter(0.8f);
+            return result;
         }
 
         private static (float[] sigmas, float[] rhos) SmoothKNNDistance(float[][] distances, int k, float localConnectivity = 1, int nIter = 64, float bandwidth = 1)
@@ -387,9 +424,16 @@ namespace UMAP
         public int Step()
         {
             var currentEpoch = _optimizationState.CurrentEpoch;
-            if (currentEpoch < GetNEpochs())
+            var numberOfEpochsToComplete = GetNEpochs();
+            if (currentEpoch < numberOfEpochsToComplete)
             {
                 OptimizeLayoutStep(currentEpoch);
+                if (_progressReporter != null)
+                {
+                    // InitializeFit roughly approximately takes 80% of the processing time for large quantities of data, leaving 20% for the Step iterations - the progress reporter
+                    // calls made here are based on the assumption that Step will be called the recommended number of times (the number-of-epochs value returned from InitializeFit)
+                    ScaleProgressReporter(_progressReporter, 0.8f, 1)((float)currentEpoch / numberOfEpochsToComplete);
+                }
             }
             return _optimizationState.CurrentEpoch;
         }
@@ -499,6 +543,12 @@ namespace UMAP
                 return -clipValue;
             else
                 return x;
+        }
+
+        private static ProgressReporter ScaleProgressReporter(ProgressReporter progressReporter, float start, float end)
+        {
+            var range = end - start;
+            return progress => progressReporter((range * progress) + start);
         }
 
         public static class DistanceFunctions

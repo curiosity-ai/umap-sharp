@@ -36,7 +36,7 @@ namespace UMAP.UnitTests
         {
             var nNeighbors = 10;
             var umap = new Umap(random: new DeterministicRandomGenerator(42), numberOfNeighbors: nNeighbors);
-            var (knnIndices, knnDistances) = umap.NearestNeighbors(TestData);
+            var (knnIndices, knnDistances) = umap.NearestNeighbors(TestData, progress => { });
 
             Assert.Equal(knnDistances.Length, TestData.Length);
             Assert.Equal(knnIndices.Length, TestData.Length);

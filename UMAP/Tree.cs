@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace UMAP
@@ -7,21 +6,9 @@ namespace UMAP
     internal static class Tree
     {
         /// <summary>
-        /// Build a random projection forest with ``nTrees``
-        /// </summary>
-        public static FlatTree[] MakeForest(float[][] data, int nNeighbors, int nTrees, IProvideRandomValues random)
-        {
-            var leafSize = Math.Max(10, nNeighbors);
-            var trees = Utils.Range(nTrees).Select((_, i) => MakeTree(data, leafSize, i, random));
-            return trees
-                .Select(tree => FlattenTree(tree, leafSize))
-                .ToArray();
-        }
-
-        /// <summary>
         /// Construct a random projection tree based on ``data`` with leaves of size at most ``leafSize``
         /// </summary>
-        private static RandomProjectionTreeNode MakeTree(float[][] data, int leafSize, int n, IProvideRandomValues random)
+        public static RandomProjectionTreeNode MakeTree(float[][] data, int leafSize, int n, IProvideRandomValues random)
         {
             var indices = Enumerable.Range(0, data.Length).ToArray();
             return MakeEuclideanTree(data, indices, leafSize, n, random);
@@ -40,7 +27,7 @@ namespace UMAP
                 return new RandomProjectionTreeNode { Indices = indices, LeftChild = null, RightChild = null, IsLeaf = true, Hyperplane = null, Offset = 0 };
         }
 
-        private static FlatTree FlattenTree(RandomProjectionTreeNode tree, int leafSize)
+        public static FlatTree FlattenTree(RandomProjectionTreeNode tree, int leafSize)
         {
             var nNodes = NumNodes(tree);
             var nLeaves = NumLeaves(tree);
@@ -249,7 +236,7 @@ namespace UMAP
             public int[][] Indices { get; set; }
         }
 
-        private sealed class RandomProjectionTreeNode
+        public sealed class RandomProjectionTreeNode
         {
             public bool IsLeaf { get; set; }
             public int[] Indices { get; set; }

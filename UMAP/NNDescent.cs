@@ -5,14 +5,24 @@ namespace UMAP
 {
     internal static class NNDescent
     {
-        public delegate (int[][] indices, float[][] weights) NNDescentFn(float[][] data, int[][] leafArray, int nNeighbors, int nIters = 10, int maxCandidates = 50, float delta = 0.001f, float rho = 0.5f, bool rpTreeInit = true);
+        public delegate (int[][] indices, float[][] weights) NNDescentFn(
+            float[][] data,
+            int[][] leafArray,
+            int nNeighbors,
+            int nIters = 10,
+            int maxCandidates = 50,
+            float delta = 0.001f,
+            float rho = 0.5f,
+            bool rpTreeInit = true,
+            Action<int, int> startingIteration = null
+        );
 
         /// <summary>
         /// Create a version of nearest neighbor descent.
         /// </summary>
         public static NNDescentFn MakeNNDescent(DistanceCalculation distanceFn, IProvideRandomValues random)
         {
-            return (data, leafArray, nNeighbors, nIters, maxCandidates, delta, rho, rpTreeInit) =>
+            return (data, leafArray, nNeighbors, nIters, maxCandidates, delta, rho, rpTreeInit, startingIteration) =>
             {
                 var nVertices = data.Length;
                 var currentGraph = MakeHeap(data.Length, nNeighbors);
@@ -47,6 +57,7 @@ namespace UMAP
                 }
                 for (var n = 0; n < nIters; n++)
                 {
+                    startingIteration?.Invoke(n, nIters);
                     var candidateNeighbors = BuildCandidates(currentGraph, nVertices, nNeighbors, maxCandidates, random);
                     var c = 0;
                     for (var i = 0; i < nVertices; i++)
