@@ -25,7 +25,7 @@ float[][] vectors = ..
 var umap = new Umap();
 var numberOfEpochs = umap.InitializeFit(vectors);
 for (var i = 0; i < numberOfEpochs; i++)
-	umap.Step();
+    umap.Step();
 
 // This will be a float[][] where each nested array has two elements
 // because the default Umap configuration generates 2D embeddings
