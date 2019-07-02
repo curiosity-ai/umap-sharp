@@ -47,8 +47,8 @@ If the input vectors are all normalized and you want to project to three dimensi
 
 ```csharp
 var umap = new Umap(
-	distance: Umap.DistanceFunctions.CosineForNormalizedVectors,
-	dimensions: 3
+    distance: Umap.DistanceFunctions.CosineForNormalizedVectors,
+    dimensions: 3
 );
 ```
 ## Parallelization support
