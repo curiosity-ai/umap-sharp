@@ -34,12 +34,14 @@ var embeddings = umap.GetEmbedding();
 
 ## Configuration options
 
-| Umap ctor argument   | Description                                                                        | Default                                                                                                                         |
-| -------------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `dimensions`         | The number of dimensions to project the data to (commonly 2 or 3)                  | 2                                                                                                                               |
-| `distanceFn`         | A custom distance function to use                                                  | `Umap.DistanceFunctions.Cosine`                                                                                                 |
-| `random`             | A pseudo-random-number generator for controlling stochastic processes              | `DefaultRandomGenerator.Instance` (unit tests use a fixed seed generator that disables parallelisation of the calculation       |
-| `numberOfNeighbors`  | The number of nearest neighbors to construct the fuzzy manifold in `InitializeFit` | 15                                                                                                                              |
+| Umap ctor argument | Description | Default |
+| - | - | - |
+| `dimensions` | The number of dimensions to project the data to (commonly 2 or 3) | 2 
+| `distanceFn` | A custom distance function to use | `Umap.DistanceFunctions.Cosine` |
+| `random` | A pseudo-random-number generator for controlling stochastic processes | `DefaultRandomGenerator.Instance` (unit tests use a fixed seed generator that disables parallelisation of the calculation |
+| `numberOfNeighbors` | The number of nearest neighbors to construct the fuzzy manifold in `InitializeFit` | 15 |
+| `customNumberOfEpochs` | If you wish to call Step a number of times other than that recommended by `InitializeFit` then it must be specified here The number of nearest neighbors to construct the fuzzy manifold in `InitializeFit` | null |
+| `progressReporter` | An optional delegate (`Action<float>`) that will be called during processing with a rough estimate of progress (from 0 to 1) | null |
 
 If the input vectors are all normalized and you want to project to three dimensions then you might use:
 
