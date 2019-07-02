@@ -16,7 +16,6 @@ namespace UMAP
         private readonly float _learningRate = 1f;
         private readonly float _localConnectivity = 1f;
         private readonly float _minDist = 0.1f;
-        private readonly int _nEpochs = 0;
         private readonly int _negativeSampleRate = 5;
         private readonly float _repulsionStrength = 1;
         private readonly float _setOpMixRatio = 1;
@@ -25,6 +24,7 @@ namespace UMAP
         private readonly DistanceCalculation _distanceFn;
         private readonly IProvideRandomValues _random;
         private readonly int _nNeighbors;
+        private readonly int? _customNumberOfEpochs;
         private readonly ProgressReporter _progressReporter;
 
         // KNN state (can be precomputed and supplied via initializeFit)
@@ -46,13 +46,22 @@ namespace UMAP
         /// </summary>
         public delegate void ProgressReporter(float progress);
 
-        // TODO: Custom nEpoch support
-        public Umap(DistanceCalculation distance = null, IProvideRandomValues random = null, int dimensions = 2, int numberOfNeighbors = 15, ProgressReporter progressReporter = null)
+        public Umap(
+            DistanceCalculation distance = null,
+            IProvideRandomValues random = null,
+            int dimensions = 2,
+            int numberOfNeighbors = 15,
+            int? customNumberOfEpochs = null,
+            ProgressReporter progressReporter = null)
         {
+            if ((customNumberOfEpochs != null) && (customNumberOfEpochs <= 0))
+                throw new ArgumentOutOfRangeException(nameof(customNumberOfEpochs), "if non-null then must be a positive value");
+
             _distanceFn = distance ?? DistanceFunctions.Cosine;
             _random = random ?? DefaultRandomGenerator.Instance;
             _nNeighbors = numberOfNeighbors;
             _optimizationState = new OptimizationState { Dim = dimensions };
+            _customNumberOfEpochs = customNumberOfEpochs;
             _progressReporter = progressReporter;
         }
 
@@ -111,8 +120,8 @@ namespace UMAP
         /// </summary>
         private int GetNEpochs()
         {
-            if (_nEpochs > 0)
-                return _nEpochs;
+            if (_customNumberOfEpochs != null)
+                return _customNumberOfEpochs.Value;
 
             var length = _graph.Dims.rows;
             if (length <= 2500)
