@@ -1,18 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <PackageId>UMAP</PackageId>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>UMAP</RootNamespace>
     <AssemblyName>UMAP</AssemblyName>
-    <Authors />
+    <Authors>Curiosity GmbH</Authors>
     <Company>Curiosity GmbH</Company>
     <Product />
-    <Description>C# implementation of "Uniform Manifold Approximation and Projection" (UMAP)</Description>
+    <Description>C# implementation of "Uniform Manifold Approximation and Projection" (UMAP) for embedding projections.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/curiosity-ai/umap-csharp</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/curiosity-ai/umap-csharp</RepositoryUrl>
-    <PackageTags>UMAP, embeddings projection, dimensionality reduction</PackageTags>
+    <PackageProjectUrl>https://github.com/curiosity-ai/umap-sharp</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/curiosity-ai/umap-sharp</RepositoryUrl>
+    <PackageTags>UMAP, embeddings projection, dimensionality reduction, TSNE, data science, embeddings, word2vec</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Copyright>(c) Copyright 2019 Curiosity GmbH - all right reserved</Copyright>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
   <ItemGroup>
