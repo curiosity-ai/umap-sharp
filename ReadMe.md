@@ -1,3 +1,6 @@
+[![Build Status](https://dev.azure.com/curiosity-ai/mosaik/_apis/build/status/umap-sharp?branchName=master)](https://dev.azure.com/curiosity-ai/mosaik/_build/latest?definitionId=6&branchName=master)
+
+
 # UMAP C#
 
 This is a C# reimplementation of the [JavaScript version](https://github.com/PAIR-code/umap-js), which was based upon the [Python version](https://github.com/lmcinnes/umap).
@@ -5,6 +8,8 @@ This is a C# reimplementation of the [JavaScript version](https://github.com/PAI
 "Uniform Manifold Approximation and Projection (UMAP) is a dimension reduction technique that can be used for visualisation similarly to t-SNE, but also for general non-linear dimension reduction" - if you have a set of vectors representing document or entities then you might use the algorithm to reduce those vectors to two or three dimensions in order to plot them and explore clusters.
 
 ## Installation
+
+[![Nuget](https://img.shields.io/nuget/v/UMAP.svg?maxAge=0&colorB=brightgreen)](https://www.nuget.org/packages/UMAP)
 
 Install via [NuGet](https://www.nuget.org/packages/UMAP):
 
