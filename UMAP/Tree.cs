@@ -24,7 +24,7 @@ namespace UMAP
                 return new RandomProjectionTreeNode { Indices = indices, LeftChild = leftChild, RightChild = rightChild, IsLeaf = false, Hyperplane = hyperplaneVector, Offset = hyperplaneOffset };
             }
             else
-                return new RandomProjectionTreeNode { Indices = indices, LeftChild = null, RightChild = null, IsLeaf = true, Hyperplane = null, Offset = 0 };
+                return new RandomProjectionTreeNode { Indices = indices, LeftChild = null, RightChild = null, IsLeaf = true, Hyperplane = new float[0], Offset = 0 };
         }
 
         public static FlatTree FlattenTree(RandomProjectionTreeNode tree, int leafSize)
