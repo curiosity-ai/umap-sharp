@@ -88,7 +88,7 @@ namespace Tester
             }
 
             Console.WriteLine("Generated visualisation images");
-            Console.WriteLine("Press [Enter] to terminuate..");
+            Console.WriteLine("Press [Enter] to terminate..");
             Console.ReadLine();
         }
     }
