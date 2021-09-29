@@ -30,7 +30,9 @@ namespace Tester
             {
                 umap.Step();
                 if ((i % 10) == 0)
+                {
                     Console.WriteLine($"- Completed {i + 1} of {nEpochs}");
+                }
             }
             Console.WriteLine("- Done");
             var embeddings = umap.GetEmbedding()
@@ -62,7 +64,9 @@ namespace Tester
                     using (var font = new Font("Tahoma", 6))
                     {
                         foreach (var (vector, uid) in scaledEmbeddings.Zip(data, (vector, entry) => (vector, entry.UID)))
+                        {
                             g.DrawString(uid, font, Brushes.White, vector.X * width, vector.Y * height);
+                        }
                     }
                 }
                 bitmap.Save("Output-Label.png");
@@ -82,7 +86,9 @@ namespace Tester
                     g.InterpolationMode = InterpolationMode.HighQualityBicubic;
                     g.PixelOffsetMode = PixelOffsetMode.HighQuality;
                     foreach (var (vector, uid) in scaledEmbeddings.Zip(data, (vector, entry) => (vector, entry.UID)))
+                    {
                         g.FillEllipse(colors[int.Parse(uid)], vector.X * width, vector.Y * height, 5, 5);
+                    }
                 }
                 bitmap.Save("Output-Color.png");
             }

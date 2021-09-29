@@ -28,7 +28,7 @@ namespace UMAP
         public static int Next()
         {
             var inst = _local;
-            if (inst == null)
+            if (inst is null)
             {
                 int seed;
                 seed = GetGlobalSeed();
@@ -47,7 +47,7 @@ namespace UMAP
         public static int Next(int maxValue)
         {
             var inst = _local;
-            if (inst == null)
+            if (inst is null)
             {
                 int seed;
                 seed = GetGlobalSeed();
@@ -73,7 +73,7 @@ namespace UMAP
         public static int Next(int minValue, int maxValue)
         {
             var inst = _local;
-            if (inst == null)
+            if (inst is null)
             {
                 int seed;
                 seed = GetGlobalSeed();
@@ -89,7 +89,7 @@ namespace UMAP
         public static float NextFloat()
         {
             var inst = _local;
-            if (inst == null)
+            if (inst is null)
             {
                 int seed;
                 seed = GetGlobalSeed();
@@ -106,7 +106,7 @@ namespace UMAP
         public static void NextFloats(Span<float> buffer)
         {
             var inst = _local;
-            if (inst == null)
+            if (inst is null)
             {
                 int seed;
                 seed = GetGlobalSeed();

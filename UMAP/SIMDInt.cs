@@ -22,7 +22,11 @@ namespace UMAP
                 Vector<int>.Zero.CopyTo(lhs, offset + _vs1);
                 Vector<int>.Zero.CopyTo(lhs, offset + _vs2);
                 Vector<int>.Zero.CopyTo(lhs, offset + _vs3);
-                if (count == _vs4) return;
+                if (count == _vs4)
+                {
+                    return;
+                }
+
                 count -= _vs4;
                 offset += _vs4;
             }
@@ -31,14 +35,22 @@ namespace UMAP
             {
                 Vector<int>.Zero.CopyTo(lhs, offset);
                 Vector<int>.Zero.CopyTo(lhs, offset + _vs1);
-                if (count == _vs2) return;
+                if (count == _vs2)
+                {
+                    return;
+                }
+
                 count -= _vs2;
                 offset += _vs2;
             }
             if (count >= _vs1)
             {
                 Vector<int>.Zero.CopyTo(lhs, offset);
-                if (count == _vs1) return;
+                if (count == _vs1)
+                {
+                    return;
+                }
+
                 count -= _vs1;
                 offset += _vs1;
             }

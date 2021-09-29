@@ -31,9 +31,14 @@ namespace UMAP
             var colsArray = cols.ToArray();
             var valuesArray = values.ToArray();
             if ((rowsArray.Length != valuesArray.Length) || (colsArray.Length != valuesArray.Length))
+            {
                 throw new ArgumentException($"The input lists {nameof(rows)}, {nameof(cols)} and {nameof(values)} must all have the same number of elements");
+            }
+
             for (var i = 0; i < valuesArray.Length; i++)
+            {
                 yield return (rowsArray[i], colsArray[i], valuesArray[i]);
+            }
         }
 
         public (int rows, int cols) Dims { get; }
@@ -60,7 +65,9 @@ namespace UMAP
         public void ForEach(Action<float, int, int> fn)
         {
             foreach (var kv in _entries)
+            {
                 fn(kv.Value, kv.Key.Row, kv.Key.Col);
+            }
         }
 
         public SparseMatrix Map(Func<float, float> fn) => Map((value, row, col) => fn(value));
@@ -75,7 +82,10 @@ namespace UMAP
         {
             var output = Enumerable.Range(0, Dims.rows).Select(_ => new float[Dims.cols]).ToArray();
             foreach (var kv in _entries)
+            {
                 output[kv.Key.Row][kv.Key.Col] = kv.Value;
+            }
+
             return output;
         }
 
@@ -84,7 +94,9 @@ namespace UMAP
         {
 #if DEBUG
             if ((row >= Dims.rows) || (col >= Dims.cols))
+            {
                 throw new Exception("array index out of bounds");
+            }
 #endif
         }
 
@@ -93,7 +105,10 @@ namespace UMAP
             var dims = (Dims.cols, Dims.rows);
             var entries = new Dictionary<RowCol, float>(_entries.Count);
             foreach (var entry in _entries)
+            {
                 entries[new RowCol(entry.Key.Col, entry.Key.Row)] = entry.Value;
+            }
+
             return new SparseMatrix(entries, dims);
         }
 
@@ -155,7 +170,10 @@ namespace UMAP
             entries.Sort((a, b) =>
             {
                 if (a.row == b.row)
+                {
                     return a.col - b.col;
+                }
+
                 return a.row - b.row;
             });
 

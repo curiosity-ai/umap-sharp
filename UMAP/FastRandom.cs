@@ -102,7 +102,10 @@ namespace UMAP
             // the range of permitted values, so we therefore call Next() to try again.
             uint rtn = w & 0x7FFFFFFF;
             if (rtn == 0x7FFFFFFF)
+            {
                 return Next();
+            }
+
             return (int)rtn;
         }
 
@@ -112,7 +115,9 @@ namespace UMAP
         public int Next(int upperBound)
         {
             if (upperBound < 0)
+            {
                 throw new ArgumentOutOfRangeException("upperBound", upperBound, "upperBound must be >=0");
+            }
 
             uint t = (x ^ (x << 11));
             x = y; y = z; z = w;
@@ -129,7 +134,9 @@ namespace UMAP
         public int Next(int lowerBound, int upperBound)
         {
             if (lowerBound > upperBound)
+            {
                 throw new ArgumentOutOfRangeException("upperBound", upperBound, "upperBound must be >=lowerBound");
+            }
 
             uint t = (x ^ (x << 11));
             x = y; y = z; z = w;

@@ -28,7 +28,11 @@ namespace UMAP
                 diff = new Vector<float>(lhs, offset + _vs1) - new Vector<float>(rhs, offset + _vs1); result += Vector.Dot(diff, diff);
                 diff = new Vector<float>(lhs, offset + _vs2) - new Vector<float>(rhs, offset + _vs2); result += Vector.Dot(diff, diff);
                 diff = new Vector<float>(lhs, offset + _vs3) - new Vector<float>(rhs, offset + _vs3); result += Vector.Dot(diff, diff);
-                if (count == _vs4) return result;
+                if (count == _vs4)
+                {
+                    return result;
+                }
+
                 count -= _vs4;
                 offset += _vs4;
             }
@@ -37,14 +41,22 @@ namespace UMAP
             {
                 diff = new Vector<float>(lhs, offset) - new Vector<float>(rhs, offset); result += Vector.Dot(diff, diff);
                 diff = new Vector<float>(lhs, offset + _vs1) - new Vector<float>(rhs, offset + _vs1); result += Vector.Dot(diff, diff);
-                if (count == _vs2) return result;
+                if (count == _vs2)
+                {
+                    return result;
+                }
+
                 count -= _vs2;
                 offset += _vs2;
             }
             if (count >= _vs1)
             {
                 diff = new Vector<float>(lhs, offset) - new Vector<float>(rhs, offset); result += Vector.Dot(diff, diff);
-                if (count == _vs1) return result;
+                if (count == _vs1)
+                {
+                    return result;
+                }
+
                 count -= _vs1;
                 offset += _vs1;
             }
@@ -72,7 +84,11 @@ namespace UMAP
                 (new Vector<float>(lhs, offset + _vs1) + v).CopyTo(lhs, offset + _vs1);
                 (new Vector<float>(lhs, offset + _vs2) + v).CopyTo(lhs, offset + _vs2);
                 (new Vector<float>(lhs, offset + _vs3) + v).CopyTo(lhs, offset + _vs3);
-                if (count == _vs4) return;
+                if (count == _vs4)
+                {
+                    return;
+                }
+
                 count -= _vs4;
                 offset += _vs4;
             }
@@ -80,14 +96,22 @@ namespace UMAP
             {
                 (new Vector<float>(lhs, offset) + v).CopyTo(lhs, offset);
                 (new Vector<float>(lhs, offset + _vs1) + v).CopyTo(lhs, offset + _vs1);
-                if (count == _vs2) return;
+                if (count == _vs2)
+                {
+                    return;
+                }
+
                 count -= _vs2;
                 offset += _vs2;
             }
             if (count >= _vs1)
             {
                 (new Vector<float>(lhs, offset) + v).CopyTo(lhs, offset);
-                if (count == _vs1) return;
+                if (count == _vs1)
+                {
+                    return;
+                }
+
                 count -= _vs1;
                 offset += _vs1;
             }
@@ -112,7 +136,11 @@ namespace UMAP
                 (new Vector<float>(lhs, offset + _vs1) * f).CopyTo(lhs, offset + _vs1);
                 (new Vector<float>(lhs, offset + _vs2) * f).CopyTo(lhs, offset + _vs2);
                 (new Vector<float>(lhs, offset + _vs3) * f).CopyTo(lhs, offset + _vs3);
-                if (count == _vs4) return;
+                if (count == _vs4)
+                {
+                    return;
+                }
+
                 count -= _vs4;
                 offset += _vs4;
             }
@@ -120,14 +148,22 @@ namespace UMAP
             {
                 (new Vector<float>(lhs, offset) * f).CopyTo(lhs, offset);
                 (new Vector<float>(lhs, offset + _vs1) * f).CopyTo(lhs, offset + _vs1);
-                if (count == _vs2) return;
+                if (count == _vs2)
+                {
+                    return;
+                }
+
                 count -= _vs2;
                 offset += _vs2;
             }
             if (count >= _vs1)
             {
                 (new Vector<float>(lhs, offset) * f).CopyTo(lhs, offset);
-                if (count == _vs1) return;
+                if (count == _vs1)
+                {
+                    return;
+                }
+
                 count -= _vs1;
                 offset += _vs1;
             }
@@ -153,7 +189,11 @@ namespace UMAP
                 result += Vector.Dot(new Vector<float>(lhs, offset + _vs1), new Vector<float>(rhs, offset + _vs1));
                 result += Vector.Dot(new Vector<float>(lhs, offset + _vs2), new Vector<float>(rhs, offset + _vs2));
                 result += Vector.Dot(new Vector<float>(lhs, offset + _vs3), new Vector<float>(rhs, offset + _vs3));
-                if (count == _vs4) return result;
+                if (count == _vs4)
+                {
+                    return result;
+                }
+
                 count -= _vs4;
                 offset += _vs4;
             }
@@ -161,14 +201,22 @@ namespace UMAP
             {
                 result += Vector.Dot(new Vector<float>(lhs, offset), new Vector<float>(rhs, offset));
                 result += Vector.Dot(new Vector<float>(lhs, offset + _vs1), new Vector<float>(rhs, offset + _vs1));
-                if (count == _vs2) return result;
+                if (count == _vs2)
+                {
+                    return result;
+                }
+
                 count -= _vs2;
                 offset += _vs2;
             }
             if (count >= _vs1)
             {
                 result += Vector.Dot(new Vector<float>(lhs, offset), new Vector<float>(rhs, offset));
-                if (count == _vs1) return result;
+                if (count == _vs1)
+                {
+                    return result;
+                }
+
                 count -= _vs1;
                 offset += _vs1;
             }

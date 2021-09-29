@@ -31,13 +31,17 @@ namespace UMAP
             var indices = heap[0][row];
             var weights = heap[1][row];
             if (weight >= weights[0])
+            {
                 return 0;
+            }
 
             // Break if we already have this element.
             for (var i = 0; i < indices.Length; i++)
             {
                 if (index == indices[i])
+                {
                     return 0;
+                }
             }
 
             return UncheckedHeapPush(heap, row, weight, index, flag);
@@ -53,7 +57,9 @@ namespace UMAP
             var weights = heap[1][row];
             var isNew = heap[2][row];
             if (weight >= weights[0])
+            {
                 return 0;
+            }
 
             // Insert val at position zero
             weights[0] = weight;
@@ -69,27 +75,41 @@ namespace UMAP
                 var ic2 = ic1 + 1;
                 var heapShape2 = heap[0][0].Length;
                 if (ic1 >= heapShape2)
+                {
                     break;
+                }
                 else if (ic2 >= heapShape2)
                 {
                     if (weights[ic1] > weight)
+                    {
                         iSwap = ic1;
+                    }
                     else
+                    {
                         break;
+                    }
                 }
                 else if (weights[ic1] >= weights[ic2])
                 {
                     if (weight < weights[ic1])
+                    {
                         iSwap = ic1;
+                    }
                     else
+                    {
                         break;
+                    }
                 }
                 else
                 {
                     if (weight < weights[ic2])
+                    {
                         iSwap = ic2;
+                    }
                     else
+                    {
                         break;
+                    }
                 }
                 weights[i] = weights[iSwap];
                 indices[i] = indices[iSwap];
@@ -113,7 +133,9 @@ namespace UMAP
                 for (var j = 0; j < nNeighbors; j++)
                 {
                     if (currentGraph[0][i][j] < 0)
+                    {
                         continue;
+                    }
 
                     var idx = (int)currentGraph[0][i][j]; // TOOD: Should Heap be int values instead of float?
                     var isn = (int)currentGraph[2][i][j]; // TOOD: Should Heap be int values instead of float?
@@ -171,13 +193,19 @@ namespace UMAP
                 var swap = elt;
 
                 if (heap1[swap] < heap1[leftChild])
+                {
                     swap = leftChild;
+                }
 
                 if (rightChild < ceiling && heap1[swap] < heap1[rightChild])
+                {
                     swap = rightChild;
+                }
 
                 if (swap == elt)
+                {
                     break;
+                }
                 else
                 {
                     var temp1 = heap1[elt];
@@ -217,7 +245,9 @@ namespace UMAP
                 return (int)Math.Floor(ind[resultIndex]);
             }
             else
+            {
                 return -1;
+            }
         }
 
         public sealed class Heap

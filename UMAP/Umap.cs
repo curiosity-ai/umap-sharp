@@ -55,7 +55,9 @@ namespace UMAP
             ProgressReporter progressReporter = null)
         {
             if ((customNumberOfEpochs != null) && (customNumberOfEpochs <= 0))
+            {
                 throw new ArgumentOutOfRangeException(nameof(customNumberOfEpochs), "if non-null then must be a positive value");
+            }
 
             _distanceFn = distance ?? DistanceFunctions.Cosine;
             _random = random ?? DefaultRandomGenerator.Instance;
@@ -73,14 +75,16 @@ namespace UMAP
         {
             // We don't need to reinitialize if we've already initialized for this data
             if ((_x == x) && _isInitialized)
+            {
                 return GetNEpochs();
+            }
 
             // For large quantities of data (which is where the progress estimating is more useful), InitializeFit takes at least 80% of the total time (the calls to Step are
             // completed much more quickly AND they naturally lend themselves to granular progress updates; one per loop compared to the recommended number of epochs)
-            ProgressReporter initializeFitProgressReporter = (_progressReporter == null) ? (progress => { }) : ScaleProgressReporter(_progressReporter, 0, 0.8f);
+            ProgressReporter initializeFitProgressReporter = (_progressReporter is null) ? (progress => { }) : ScaleProgressReporter(_progressReporter, 0, 0.8f);
 
             _x = x;
-            if ((_knnIndices == null) && (_knnDistances == null))
+            if ((_knnIndices is null) && (_knnDistances is null))
             {
                 // This part of the process very roughly accounts for 1/3 of the work
                 (_knnIndices, _knnDistances) = NearestNeighbors(x, ScaleProgressReporter(initializeFitProgressReporter, 0, 0.3f));
@@ -121,17 +125,27 @@ namespace UMAP
         private int GetNEpochs()
         {
             if (_customNumberOfEpochs != null)
+            {
                 return _customNumberOfEpochs.Value;
+            }
 
             var length = _graph.Dims.rows;
             if (length <= 2500)
+            {
                 return 500;
+            }
             else if (length <= 5000)
+            {
                 return 400;
+            }
             else if (length <= 7500)
+            {
                 return 300;
+            }
             else
+            {
                 return 200;
+            }
         }
 
         /// <summary>
@@ -213,13 +227,19 @@ namespace UMAP
                     {
                         rho[i] = nonZeroDists[index - 1];
                         if (interpolation > SMOOTH_K_TOLERANCE)
+                        {
                             rho[i] += interpolation * (nonZeroDists[index] - nonZeroDists[index - 1]);
+                        }
                     }
                     else
+                    {
                         rho[i] = interpolation * nonZeroDists[0];
+                    }
                 }
                 else if (nonZeroDists.Length > 0)
+                {
                     rho[i] = Utils.Max(nonZeroDists);
+                }
 
                 for (var n = 0; n < nIter; n++)
                 {
@@ -228,12 +248,18 @@ namespace UMAP
                     {
                         var d = distances[i][j] - rho[i];
                         if (d > 0)
+                        {
                             psum += Math.Exp(-(d / mid));
+                        }
                         else
+                        {
                             psum += 1.0;
+                        }
                     }
                     if (Math.Abs(psum - target) < SMOOTH_K_TOLERANCE)
+                    {
                         break;
+                    }
 
                     if (psum > target)
                     {
@@ -244,9 +270,13 @@ namespace UMAP
                     {
                         lo = mid;
                         if (hi == float.MaxValue)
+                        {
                             mid *= 2;
+                        }
                         else
+                        {
                             mid = (lo + hi) / 2;
+                        }
                     }
                 }
 
@@ -257,13 +287,17 @@ namespace UMAP
                 {
                     var meanIthDistances = Utils.Mean(ithDistances);
                     if (result[i] < MIN_K_DIST_SCALE * meanIthDistances)
+                    {
                         result[i] = MIN_K_DIST_SCALE * meanIthDistances;
+                    }
                 }
                 else
                 {
                     var meanDistances = Utils.Mean(distances.Select(Utils.Mean).ToArray());
                     if (result[i] < MIN_K_DIST_SCALE * meanDistances)
+                    {
                         result[i] = MIN_K_DIST_SCALE * meanDistances;
+                    }
                 }
             }
             return (result, rho);
@@ -282,15 +316,23 @@ namespace UMAP
                 for (var j = 0; j < nNeighbors; j++)
                 {
                     if (knnIndices[i][j] == -1)
+                    {
                         continue; // We didn't get the full knn for i
+                    }
 
                     float val;
                     if (knnIndices[i][j] == i)
+                    {
                         val = 0;
+                    }
                     else if (knnDistances[i][j] - rhos[i] <= 0.0)
+                    {
                         val = 1;
+                    }
                     else
+                    {
                         val = (float)Math.Exp(-((knnDistances[i][j] - rhos[i]) / sigmas[i]));
+                    }
 
                     rows[i * nNeighbors + j] = i;
                     cols[i * nNeighbors + j] = knnIndices[i][j];
@@ -311,7 +353,9 @@ namespace UMAP
             foreach (var value in _graph.GetValues())
             {
                 if (graphMax < value)
+                {
                     graphMax = value;
+                }
             }
 
             var graph = _graph.Map(value => (value < graphMax / nEpochs) ? 0 : value);
@@ -367,7 +411,9 @@ namespace UMAP
             foreach (var (n, i) in weights.Select((w, i) => ((w / max) * nEpochs, i)))
             {
                 if (n > 0)
+                {
                     result[i] = nEpochs / n;
+                }
             }
             return result;
         }
@@ -397,7 +443,10 @@ namespace UMAP
         {
             // 2019-06-21 DWR: If we need to support other spread, minDist values then we might be able to use the LM implementation in Accord.NET but I'll hard code values that relate to the default configuration for now
             if ((spread != 1) || (minDist != 0.1f))
+            {
                 throw new ArgumentException($"Currently, the {nameof(FindABParams)} method only supports spread, minDist values of 1, 0.1 (the Levenberg-Marquardt algorithm is required to process other values");
+            }
+
             return (1.5694704762346365f, 0.8941996053733949f);
         }
 
@@ -437,7 +486,7 @@ namespace UMAP
             if (currentEpoch < numberOfEpochsToComplete)
             {
                 OptimizeLayoutStep(currentEpoch);
-                if (_progressReporter != null)
+                if (_progressReporter is object)
                 {
                     // InitializeFit roughly approximately takes 80% of the processing time for large quantities of data, leaving 20% for the Step iterations - the progress reporter
                     // calls made here are based on the assumption that Step will be called the recommended number of times (the number-of-epochs value returned from InitializeFit)
@@ -454,11 +503,15 @@ namespace UMAP
         private void OptimizeLayoutStep(int n)
         {
             if (_random.IsThreadSafe)
+            {
                 Parallel.For(0, _optimizationState.EpochsPerSample.Length, Iterate);
+            }
             else
             {
                 for (var i = 0; i < _optimizationState.EpochsPerSample.Length; i++)
+                {
                     Iterate(i);
+                }
             }
 
             _optimizationState.Alpha = _optimizationState.InitialAlpha * (1f - n / _optimizationState.NEpochs);
@@ -467,7 +520,9 @@ namespace UMAP
             void Iterate(int i)
             {
                 if (_optimizationState.EpochOfNextSample[i] >= n)
+                {
                     return;
+                }
 
                 Span<float> embeddingSpan = _embedding.AsSpan();
 
@@ -492,7 +547,9 @@ namespace UMAP
                     var gradD = Clip(gradCoeff * (current[d] - other[d]), clipValue);
                     current[d] += gradD * _optimizationState.Alpha;
                     if (_optimizationState.MoveOther)
+                    {
                         other[d] += -gradD * _optimizationState.Alpha;
+                    }
                 }
 
                 _optimizationState.EpochOfNextSample[i] += _optimizationState.EpochsPerSample[i];
@@ -511,13 +568,18 @@ namespace UMAP
                         gradCoeff *= _optimizationState.GetDistanceFactor(distSquared); //Preparation for future work for interpolating the table before optimizing
                     }
                     else if (j == k)
+                    {
                         continue;
+                    }
 
                     for (var d = 0; d < _optimizationState.Dim; d++)
                     {
                         var gradD = 4f;
                         if (gradCoeff > 0)
+                        {
                             gradD = Clip(gradCoeff * (current[d] - other[d]), clipValue);
+                        }
+
                         current[d] += gradD * _optimizationState.Alpha;
                     }
                 }
@@ -547,11 +609,17 @@ namespace UMAP
         private static float Clip(float x, float clipValue)
         {
             if (x > clipValue)
+            {
                 return clipValue;
+            }
             else if (x < -clipValue)
+            {
                 return -clipValue;
+            }
             else
+            {
                 return x;
+            }
         }
 
         private static ProgressReporter ScaleProgressReporter(ProgressReporter progressReporter, float start, float end)

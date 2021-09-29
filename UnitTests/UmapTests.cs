@@ -13,7 +13,10 @@ namespace UMAP.UnitTests
             var umap = new Umap(random: new DeterministicRandomGenerator(42));
             var nEpochs = umap.InitializeFit(TestData);
             for (var i = 0; i < nEpochs; i++)
+            {
                 umap.Step();
+            }
+
             var embedding = umap.GetEmbedding();
             Assert.Equal(500, nEpochs);
             AssertNestedFloatArraysEquivalent(TestResults2D, embedding);
@@ -25,7 +28,10 @@ namespace UMAP.UnitTests
             var umap = new Umap(random: new DeterministicRandomGenerator(42), dimensions: 3);
             var nEpochs = umap.InitializeFit(TestData);
             for (var i = 0; i < nEpochs; i++)
+            {
                 umap.Step();
+            }
+
             var embedding = umap.GetEmbedding();
             Assert.Equal(500, nEpochs);
             AssertNestedFloatArraysEquivalent(TestResults3D, embedding);
@@ -65,7 +71,9 @@ namespace UMAP.UnitTests
             {
                 Assert.Equal(expectedRow.Length, actualRow.Length);
                 foreach (var (expectedValue, actualValue) in expectedRow.Zip(actualRow, (expectedValue, actualValue) => (expectedValue, actualValue)))
+                {
                     Assert.True(Math.Abs(expectedValue - actualValue) < 1e-5);
+                }
             }
         }
     }

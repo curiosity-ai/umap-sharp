@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace UMAP
@@ -24,7 +25,9 @@ namespace UMAP
                 return new RandomProjectionTreeNode { Indices = indices, LeftChild = leftChild, RightChild = rightChild, IsLeaf = false, Hyperplane = hyperplaneVector, Offset = hyperplaneOffset };
             }
             else
-                return new RandomProjectionTreeNode { Indices = indices, LeftChild = null, RightChild = null, IsLeaf = true, Hyperplane = new float[0], Offset = 0 };
+            {
+                return new RandomProjectionTreeNode { Indices = indices, LeftChild = null, RightChild = null, IsLeaf = true, Hyperplane = Array.Empty<float>(), Offset = 0 };
+            }
         }
 
         public static FlatTree FlattenTree(RandomProjectionTreeNode tree, int leafSize)
@@ -77,14 +80,21 @@ namespace UMAP
             {
                 var margin = hyperplaneOffset;
                 for (var d = 0; d < dim; d++)
+                {
                     margin += hyperplaneVector[d] * data[indices[i]][d];
+                }
+
                 if (margin == 0)
                 {
                     side[i] = random.Next(0, 2);
                     if (side[i] == 0)
+                    {
                         nLeft += 1;
+                    }
                     else
+                    {
                         nRight += 1;
+                    }
                 }
                 else if (margin > 0)
                 {
@@ -185,12 +195,16 @@ namespace UMAP
                 foreach (var tree in forest)
                 {
                     foreach (var entry in tree.Indices)
+                    {
                         output.Add(entry);
+                    }
                 }
                 return output.ToArray();
             }
             else
+            {
                 return new[] { new[] { -1 } };
+            }
         }
 
         /// <summary>
@@ -203,9 +217,13 @@ namespace UMAP
             {
                 var side = SelectSide(tree.Hyperplanes[node], tree.Offsets[node], point, random);
                 if (side == 0)
+                {
                     node = tree.Children[node][0];
+                }
                 else
+                {
                     node = tree.Children[node][1];
+                }
             }
             var index = -1 * tree.Children[node][0];
             return tree.Indices[index];
@@ -218,14 +236,22 @@ namespace UMAP
         {
             var margin = offset;
             for (var d = 0; d < point.Length; d++)
+            {
                 margin += hyperplane[d] * point[d];
+            }
 
             if (margin == 0)
+            {
                 return random.Next(0, 2);
+            }
             else if (margin > 0)
+            {
                 return 0;
+            }
             else
+            {
                 return 1;
+            }
         }
 
         public sealed class FlatTree

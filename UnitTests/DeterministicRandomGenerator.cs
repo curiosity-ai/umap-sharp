@@ -16,7 +16,9 @@ namespace UMAP.UnitTests
         public void NextFloats(Span<float> buffer)
         {
             for (var i = 0; i < buffer.Length; i++)
+            {
                 buffer[i] = _rnd.NextFloat();
+            }
         }
     }
 }

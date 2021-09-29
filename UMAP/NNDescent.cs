@@ -43,11 +43,17 @@ namespace UMAP
                         for (var i = 0; i < leafArray[n].Length; i++)
                         {
                             if (leafArray[n][i] < 0)
+                            {
                                 break;
+                            }
+
                             for (var j = i + 1; j < leafArray[n].Length; j++)
                             {
                                 if (leafArray[n][j] < 0)
+                                {
                                     break;
+                                }
+
                                 var d = distanceFn(data[leafArray[n][i]], data[leafArray[n][j]]);
                                 HeapPush(currentGraph, leafArray[n][i], d, leafArray[n][j], 1);
                                 HeapPush(currentGraph, leafArray[n][j], d, leafArray[n][i], 1);
@@ -66,14 +72,19 @@ namespace UMAP
                         {
                             var p = (int)Math.Floor(candidateNeighbors[0][i][j]);
                             if ((p < 0) || (random.NextFloat() < rho))
+                            {
                                 continue;
+                            }
+
                             for (var k = 0; k < maxCandidates; k++)
                             {
                                 var q = (int)Math.Floor(candidateNeighbors[0][i][k]);
                                 var cj = candidateNeighbors[2][i][j];
                                 var ck = candidateNeighbors[2][i][k];
                                 if (q < 0 || ((cj == 0) && (ck == 0)))
+                                {
                                     continue;
+                                }
 
                                 var d = distanceFn(data[p], data[q]);
                                 c += HeapPush(currentGraph, p, d, q, 1);

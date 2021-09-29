@@ -51,7 +51,10 @@ namespace UMAP
                         }
                     }
                     if (!broken)
+                    {
                         rejectSample = false;
+                    }
+
                     result[i] = j;
                 }
             }
