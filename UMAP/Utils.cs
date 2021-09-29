@@ -34,6 +34,10 @@ namespace UMAP
         /// </summary>
         public static int[] RejectionSample(int nSamples, int poolSize, IProvideRandomValues random)
         {
+            if(poolSize < nSamples)
+            {
+                nSamples = poolSize;
+            }
             var result = new int[nSamples];
             for (var i = 0; i < nSamples; i++)
             {
