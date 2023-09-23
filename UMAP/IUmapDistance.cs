@@ -6,7 +6,6 @@ namespace UMAP
 {
     public interface IUmapDistance<T>
     {
-        float Data { get; set; }
-        T RelatedComplexModel { get; set; }
+        float EmbeddingVectorValue { get; set; }
     }
 }
