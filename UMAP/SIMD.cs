@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
 namespace UMAP
 {
-    internal static class SIMD
+    internal static class SIMD<T>
     {
         private static readonly int _vs1 = Vector<float>.Count;
         private static readonly int _vs2 = 2 * Vector<float>.Count;
@@ -12,7 +13,7 @@ namespace UMAP
         private static readonly int _vs4 = 4 * Vector<float>.Count;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float Magnitude(ref float[] vec) => (float)Math.Sqrt(DotProduct(ref vec, ref vec));
+        public static float Magnitude(ref IUmapDistance<T>[] vec) => (float)Math.Sqrt(DotProduct(ref vec, ref vec));
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Euclidean(ref float[] lhs, ref float[] rhs)
@@ -178,17 +179,17 @@ namespace UMAP
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float DotProduct(ref float[] lhs, ref float[] rhs)
+        public static float DotProduct(ref IUmapDistance<T>[] lhs, ref IUmapDistance<T>[] rhs)
         {
             var result = 0f;
             var count = lhs.Length;
             var offset = 0;
             while (count >= _vs4)
             {
-                result += Vector.Dot(new Vector<float>(lhs, offset), new Vector<float>(rhs, offset));
-                result += Vector.Dot(new Vector<float>(lhs, offset + _vs1), new Vector<float>(rhs, offset + _vs1));
-                result += Vector.Dot(new Vector<float>(lhs, offset + _vs2), new Vector<float>(rhs, offset + _vs2));
-                result += Vector.Dot(new Vector<float>(lhs, offset + _vs3), new Vector<float>(rhs, offset + _vs3));
+                result += Vector.Dot(new Vector<float>(lhs.Select(x => x.Data).ToArray(), offset), new Vector<float>(rhs.Select(x => x.Data).ToArray(), offset));
+                result += Vector.Dot(new Vector<float>(lhs.Select(x => x.Data).ToArray(), offset + _vs1), new Vector<float>(rhs.Select(x => x.Data).ToArray(), offset + _vs1));
+                result += Vector.Dot(new Vector<float>(lhs.Select(x => x.Data).ToArray(), offset + _vs2), new Vector<float>(rhs.Select(x => x.Data).ToArray(), offset + _vs2));
+                result += Vector.Dot(new Vector<float>(lhs.Select(x => x.Data).ToArray(), offset + _vs3), new Vector<float>(rhs.Select(x => x.Data).ToArray(), offset + _vs3));
                 if (count == _vs4)
                 {
                     return result;
@@ -199,8 +200,8 @@ namespace UMAP
             }
             if (count >= _vs2)
             {
-                result += Vector.Dot(new Vector<float>(lhs, offset), new Vector<float>(rhs, offset));
-                result += Vector.Dot(new Vector<float>(lhs, offset + _vs1), new Vector<float>(rhs, offset + _vs1));
+                result += Vector.Dot(new Vector<float>(lhs.Select(x => x.Data).ToArray(), offset), new Vector<float>(rhs.Select(x => x.Data).ToArray(), offset));
+                result += Vector.Dot(new Vector<float>(lhs.Select(x => x.Data).ToArray(), offset + _vs1), new Vector<float>(rhs.Select(x => x.Data).ToArray(), offset + _vs1));
                 if (count == _vs2)
                 {
                     return result;
@@ -211,7 +212,7 @@ namespace UMAP
             }
             if (count >= _vs1)
             {
-                result += Vector.Dot(new Vector<float>(lhs, offset), new Vector<float>(rhs, offset));
+                result += Vector.Dot(new Vector<float>(lhs.Select(x => x.Data).ToArray(), offset), new Vector<float>(rhs.Select(x => x.Data).ToArray(), offset));
                 if (count == _vs1)
                 {
                     return result;
@@ -224,7 +225,7 @@ namespace UMAP
             {
                 while (count > 0)
                 {
-                    result += lhs[offset] * rhs[offset];
+                    result += lhs.Select(x => x.Data).ToArray()[offset] * rhs.Select(x => x.Data).ToArray()[offset];
                     offset++; count--;
                 }
             }

@@ -4,18 +4,18 @@ using System.Linq;
 
 namespace UMAP
 {
-    internal static class Tree
+    internal static class Tree<T>
     {
         /// <summary>
         /// Construct a random projection tree based on ``data`` with leaves of size at most ``leafSize``
         /// </summary>
-        public static RandomProjectionTreeNode MakeTree(float[][] data, int leafSize, int n, IProvideRandomValues random)
+        public static RandomProjectionTreeNode MakeTree(IUmapDistance<T>[][] data, int leafSize, int n, IProvideRandomValues random)
         {
             var indices = Enumerable.Range(0, data.Length).ToArray();
             return MakeEuclideanTree(data, indices, leafSize, n, random);
         }
 
-        private static RandomProjectionTreeNode MakeEuclideanTree(float[][] data, int[] indices, int leafSize, int q, IProvideRandomValues random)
+        private static RandomProjectionTreeNode MakeEuclideanTree(IUmapDistance<T>[][] data, int[] indices, int leafSize, int q, IProvideRandomValues random)
         {
             if (indices.Length > leafSize)
             {
@@ -50,7 +50,7 @@ namespace UMAP
         /// the basis for a random projection tree, which simply uses this splitting recursively. This particular split uses euclidean distance to determine the hyperplane and which side each data
         /// sample falls on.
         /// </summary>
-        private static (int[] indicesLeft, int[] indicesRight, float[] hyperplaneVector, float hyperplaneOffset) EuclideanRandomProjectionSplit(float[][] data, int[] indices, IProvideRandomValues random)
+        private static (int[] indicesLeft, int[] indicesRight, float[] hyperplaneVector, float hyperplaneOffset) EuclideanRandomProjectionSplit(IUmapDistance<T>[][] data, int[] indices, IProvideRandomValues random)
         {
             var dim = data[0].Length;
 
@@ -67,8 +67,8 @@ namespace UMAP
             var hyperplaneVector = new float[dim];
             for (var i = 0; i < hyperplaneVector.Length; i++)
             {
-                hyperplaneVector[i] = data[left][i] - data[right][i];
-                hyperplaneOffset -= (hyperplaneVector[i] * (data[left][i] + data[right][i])) / 2;
+                hyperplaneVector[i] = data[left][i].Data - data[right][i].Data;
+                hyperplaneOffset -= (hyperplaneVector[i] * (data[left][i].Data + data[right][i].Data)) / 2;
             }
 
             // For each point compute the margin (project into normal vector)
@@ -81,7 +81,7 @@ namespace UMAP
                 var margin = hyperplaneOffset;
                 for (var d = 0; d < dim; d++)
                 {
-                    margin += hyperplaneVector[d] * data[indices[i]][d];
+                    margin += hyperplaneVector[d] * data[indices[i]][d].Data;
                 }
 
                 if (margin == 0)
