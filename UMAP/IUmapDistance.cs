@@ -4,7 +4,7 @@ using System.Text;
 
 namespace UMAP
 {
-    public interface IUmapDistance<T>
+    public interface IUmapDistanceParameter<T>
     {
         float EmbeddingVectorValue { get; set; }
     }

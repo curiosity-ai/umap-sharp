@@ -13,7 +13,7 @@ namespace UMAP
         private static readonly int _vs4 = 4 * Vector<float>.Count;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float Magnitude(ref IUmapDistance<T>[] vec) => (float)Math.Sqrt(DotProduct(ref vec, ref vec));
+        public static float Magnitude(ref IUmapDistanceParameter<T>[] vec) => (float)Math.Sqrt(DotProduct(ref vec, ref vec));
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Euclidean(ref float[] lhs, ref float[] rhs)
@@ -179,7 +179,7 @@ namespace UMAP
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float DotProduct(ref IUmapDistance<T>[] lhs, ref IUmapDistance<T>[] rhs)
+        public static float DotProduct(ref IUmapDistanceParameter<T>[] lhs, ref IUmapDistanceParameter<T>[] rhs)
         {
             var result = 0f;
             var count = lhs.Length;

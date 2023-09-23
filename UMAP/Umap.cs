@@ -31,7 +31,7 @@ namespace UMAP
 
         // Internal graph connectivity representation
         private SparseMatrix _graph = null;
-        private IUmapDistance<T>[][] _x = null;
+        private IUmapDistanceParameter<T>[][] _x = null;
         private bool _isInitialized = false;
         private Tree<T>.FlatTree[] _rpForest = new Tree<T>.FlatTree[0];
 
@@ -69,7 +69,7 @@ namespace UMAP
         /// Initializes fit by computing KNN and a fuzzy simplicial set, as well as initializing the projected embeddings. Sets the optimization state ahead of optimization steps.
         /// Returns the number of epochs to be used for the SGD optimization.
         /// </summary>
-        public int InitializeFit(IUmapDistance<T>[][] x)
+        public int InitializeFit(IUmapDistanceParameter<T>[][] x)
         {
             // We don't need to reinitialize if we've already initialized for this data
             if ((_x == x) && _isInitialized)
@@ -149,7 +149,7 @@ namespace UMAP
         /// <summary>
         /// Compute the ``nNeighbors`` nearest points for each data point in ``X`` - this may be exact, but more likely is approximated via nearest neighbor descent.
         /// </summary>
-        internal (int[][] knnIndices, float[][] knnDistances) NearestNeighbors(IUmapDistance<T>[][] x, ProgressReporter progressReporter)
+        internal (int[][] knnIndices, float[][] knnDistances) NearestNeighbors(IUmapDistanceParameter<T>[][] x, ProgressReporter progressReporter)
         {
             var metricNNDescent = NNDescent<T>.MakeNNDescent(_distanceFn, _random);
             progressReporter(0.05f);
@@ -182,7 +182,7 @@ namespace UMAP
         /// to the data. This is done by locally approximating geodesic distance at each point, creating a fuzzy simplicial set for each such point, and then combining all the local fuzzy
         /// simplicial sets into a global one via a fuzzy union.
         /// </summary>
-        private SparseMatrix FuzzySimplicialSet(IUmapDistance<T>[][] x, int nNeighbors, float setOpMixRatio, ProgressReporter progressReporter)
+        private SparseMatrix FuzzySimplicialSet(IUmapDistanceParameter<T>[][] x, int nNeighbors, float setOpMixRatio, ProgressReporter progressReporter)
         {
             var knnIndices = _knnIndices ?? new int[0][];
             var knnDistances = _knnDistances ?? new float[0][];
@@ -631,12 +631,12 @@ namespace UMAP
 
         public static class DistanceFunctions<T>
         {
-            public static float Cosine(IUmapDistance<T>[] lhs, IUmapDistance<T>[] rhs)
+            public static float Cosine(IUmapDistanceParameter<T>[] lhs, IUmapDistanceParameter<T>[] rhs)
             {
                 return 1 - (SIMD<T>.DotProduct(ref lhs, ref rhs) / (SIMD<T>.Magnitude(ref lhs) * SIMD<T>.Magnitude(ref rhs)));
             }
 
-            public static float CosineForNormalizedVectors(IUmapDistance<T>[] lhs, IUmapDistance<T>[] rhs)
+            public static float CosineForNormalizedVectors(IUmapDistanceParameter<T>[] lhs, IUmapDistanceParameter<T>[] rhs)
             {
                 return 1 - SIMD<T>.DotProduct(ref lhs, ref rhs);
             }

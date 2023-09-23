@@ -7,7 +7,7 @@ namespace UMAP
     internal static class NNDescent<T>
     {
         public delegate (int[][] indices, float[][] weights) NNDescentFn(
-            IUmapDistance<T>[][] data,
+            IUmapDistanceParameter<T>[][] data,
             int[][] leafArray,
             int nNeighbors,
             int nIters = 10,
