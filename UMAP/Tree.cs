@@ -67,8 +67,10 @@ namespace UMAP
             var hyperplaneVector = new float[dim];
             for (var i = 0; i < hyperplaneVector.Length; i++)
             {
-                hyperplaneVector[i] = data[left][i].EmbeddingVectorValue - data[right][i].EmbeddingVectorValue;
-                hyperplaneOffset -= (hyperplaneVector[i] * (data[left][i].EmbeddingVectorValue + data[right][i].EmbeddingVectorValue)) / 2;
+                var leftVectorValue = data[left][i].EmbeddingVectorValue;
+                var rightVectorValue = data[right][i].EmbeddingVectorValue;
+                hyperplaneVector[i] = leftVectorValue - rightVectorValue;
+                hyperplaneOffset -= (hyperplaneVector[i] * (leftVectorValue + rightVectorValue)) / 2;
             }
 
             // For each point compute the margin (project into normal vector)

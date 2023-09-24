@@ -181,15 +181,18 @@ namespace UMAP
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float DotProduct(ref IUmapDistanceParameter<T>[] lhs, ref IUmapDistanceParameter<T>[] rhs)
         {
+
+            var lhsArray = lhs.Select(x => x.EmbeddingVectorValue).ToArray();
+            var rhsArray = rhs.Select(x=>x.EmbeddingVectorValue).ToArray();
             var result = 0f;
             var count = lhs.Length;
             var offset = 0;
             while (count >= _vs4)
             {
-                result += Vector.Dot(new Vector<float>(lhs.Select(x => x.EmbeddingVectorValue).ToArray(), offset), new Vector<float>(rhs.Select(x => x.EmbeddingVectorValue).ToArray(), offset));
-                result += Vector.Dot(new Vector<float>(lhs.Select(x => x.EmbeddingVectorValue).ToArray(), offset + _vs1), new Vector<float>(rhs.Select(x => x.EmbeddingVectorValue).ToArray(), offset + _vs1));
-                result += Vector.Dot(new Vector<float>(lhs.Select(x => x.EmbeddingVectorValue).ToArray(), offset + _vs2), new Vector<float>(rhs.Select(x => x.EmbeddingVectorValue).ToArray(), offset + _vs2));
-                result += Vector.Dot(new Vector<float>(lhs.Select(x => x.EmbeddingVectorValue).ToArray(), offset + _vs3), new Vector<float>(rhs.Select(x => x.EmbeddingVectorValue).ToArray(), offset + _vs3));
+                result += Vector.Dot(new Vector<float>(lhsArray, offset), new Vector<float>(rhsArray, offset));
+                result += Vector.Dot(new Vector<float>(lhsArray, offset + _vs1), new Vector<float>(rhsArray, offset + _vs1));
+                result += Vector.Dot(new Vector<float>(lhsArray, offset + _vs2), new Vector<float>(rhsArray, offset + _vs2));
+                result += Vector.Dot(new Vector<float>(lhsArray, offset + _vs3), new Vector<float>(rhsArray, offset + _vs3));
                 if (count == _vs4)
                 {
                     return result;
@@ -200,8 +203,8 @@ namespace UMAP
             }
             if (count >= _vs2)
             {
-                result += Vector.Dot(new Vector<float>(lhs.Select(x => x.EmbeddingVectorValue).ToArray(), offset), new Vector<float>(rhs.Select(x => x.EmbeddingVectorValue).ToArray(), offset));
-                result += Vector.Dot(new Vector<float>(lhs.Select(x => x.EmbeddingVectorValue).ToArray(), offset + _vs1), new Vector<float>(rhs.Select(x => x.EmbeddingVectorValue).ToArray(), offset + _vs1));
+                result += Vector.Dot(new Vector<float>(lhsArray, offset), new Vector<float>(rhsArray, offset));
+                result += Vector.Dot(new Vector<float>(lhsArray, offset + _vs1), new Vector<float>(rhsArray, offset + _vs1));
                 if (count == _vs2)
                 {
                     return result;
@@ -212,7 +215,7 @@ namespace UMAP
             }
             if (count >= _vs1)
             {
-                result += Vector.Dot(new Vector<float>(lhs.Select(x => x.EmbeddingVectorValue).ToArray(), offset), new Vector<float>(rhs.Select(x => x.EmbeddingVectorValue).ToArray(), offset));
+                result += Vector.Dot(new Vector<float>(lhsArray, offset), new Vector<float>(rhsArray, offset));
                 if (count == _vs1)
                 {
                     return result;
@@ -225,7 +228,7 @@ namespace UMAP
             {
                 while (count > 0)
                 {
-                    result += lhs.Select(x => x.EmbeddingVectorValue).ToArray()[offset] * rhs.Select(x => x.EmbeddingVectorValue).ToArray()[offset];
+                    result += lhsArray[offset] * rhsArray[offset];
                     offset++; count--;
                 }
             }
