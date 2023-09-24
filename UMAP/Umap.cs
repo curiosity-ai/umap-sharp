@@ -649,22 +649,22 @@ namespace UMAP
 
         private sealed class OptimizationState
         {
-            public int CurrentEpoch = 0;
-            public int[] Head = new int[0];
-            public int[] Tail = new int[0];
-            public float[] EpochsPerSample = new float[0];
-            public float[] EpochOfNextSample = new float[0];
-            public float[] EpochOfNextNegativeSample = new float[0];
-            public float[] EpochsPerNegativeSample = new float[0];
-            public bool MoveOther = true;
-            public float InitialAlpha = 1;
-            public float Alpha = 1;
-            public float Gamma = 1;
-            public float A = 1.5769434603113077f;
-            public float B = 0.8950608779109733f;
-            public int Dim = 2;
-            public int NEpochs = 500;
-            public int NVertices = 0;
+            public int CurrentEpoch                 =  0;
+            public int[] Head                       =  new int[0];
+            public int[] Tail                       =  new int[0];
+            public float[] EpochsPerSample          =  new float[0];
+            public float[] EpochOfNextSample        =  new float[0];
+            public float[] EpochOfNextNegativeSample=  new float[0];
+            public float[] EpochsPerNegativeSample  =  new float[0];
+            public bool MoveOther                   =  true;
+            public float InitialAlpha               =  1;
+            public float Alpha                      =  1;
+            public float Gamma                      =  1;
+            public float A                          =  1.5769434603113077f;
+            public float B                          =  0.8950608779109733f;
+            public int Dim                          =  2;
+            public int NEpochs                      =  500;
+            public int NVertices                    =  0;
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public float GetDistanceFactor(float distSquared) => 1f / ((0.001f + distSquared) * (float)(A * Math.Pow(distSquared, B) + 1));
