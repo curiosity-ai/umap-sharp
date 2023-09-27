@@ -381,7 +381,7 @@ namespace UMAP
             return (head.ToArray(), tail.ToArray(), MakeEpochsPerSample(weights.ToArray(), nEpochs));
         }
 
-        private void ShuffleTogether<T, T2, T3>(List<T> list, List<T2> other, List<T3> weights)
+        private void ShuffleTogether<T1, T2, T3>(List<T1> list, List<T2> other, List<T3> weights)
         {
             int n = list.Count;
             if (other.Count != n) { throw new Exception(); }
@@ -389,7 +389,7 @@ namespace UMAP
             {
                 n--;
                 int k = _random.Next(0, n + 1);
-                T value = list[k];
+                T1 value = list[k];
                 list[k] = list[n];
                 list[n] = value;
 
