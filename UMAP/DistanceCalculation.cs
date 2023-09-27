@@ -1,4 +1,4 @@
 ﻿namespace UMAP
 {
-    public delegate float DistanceCalculation<T>(IUmapDistanceParameter<T>[] x, IUmapDistanceParameter<T>[] y);
+    public delegate float DistanceCalculation<T>(T x, T y) where T : IUmapDataPoint;
 }
