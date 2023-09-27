@@ -8,6 +8,6 @@
         /// <summary>
         /// The data being operated on.
         /// </summary>
-        public float[] Data { get; }
+        float[] Data { get; }
     }
 }
