@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -26,12 +26,12 @@ namespace UMAP
         private readonly ProgressReporter _progressReporter;
 
         // KNN state (can be precomputed and supplied via initializeFit)
-        private int[][]? _knnIndices = null;
-        private float[][]? _knnDistances = null;
+        private int[][] _knnIndices = null;
+        private float[][] _knnDistances = null;
 
         // Internal graph connectivity representation
-        private SparseMatrix? _graph = null;
-        private T[]? _x = null;
+        private SparseMatrix _graph = null;
+        private T[] _x = null;
         private bool _isInitialized = false;
         private Tree<T>.FlatTree[] _rpForest = new Tree<T>.FlatTree[0];
 
@@ -57,7 +57,7 @@ namespace UMAP
                 throw new ArgumentOutOfRangeException(nameof(customNumberOfEpochs), "if non-null then must be a positive value");
             }
 
-            _distanceFn = distance ?? DistanceFunctions<T>.Cosine;
+            _distanceFn = distance ?? DistanceFunctions.Cosine;
             _random = random ?? DefaultRandomGenerator.Instance;
             _nNeighbors = numberOfNeighbors;
             _optimizationState = new OptimizationState { Dim = dimensions };

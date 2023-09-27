@@ -15,7 +15,7 @@ namespace UMAP
             float delta = 0.001f,
             float rho = 0.5f,
             bool rpTreeInit = true,
-            Action<int, int>? startingIteration = null
+            Action<int, int> startingIteration = null
         );
 
         /// <summary>
