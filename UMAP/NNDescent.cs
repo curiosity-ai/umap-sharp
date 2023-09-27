@@ -4,10 +4,10 @@ using static UMAP.Heaps;
 
 namespace UMAP
 {
-    internal static class NNDescent<T>
+    internal static class NNDescent<T> where T : IUmapDataPoint
     {
         public delegate (int[][] indices, float[][] weights) NNDescentFn(
-            IUmapDistanceParameter<T>[][] data,
+            T[] data,
             int[][] leafArray,
             int nNeighbors,
             int nIters = 10,
@@ -15,7 +15,7 @@ namespace UMAP
             float delta = 0.001f,
             float rho = 0.5f,
             bool rpTreeInit = true,
-            Action<int, int> startingIteration = null
+            Action<int, int>? startingIteration = null
         );
 
         /// <summary>
