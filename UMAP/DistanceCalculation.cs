@@ -1,4 +1,4 @@
 ﻿namespace UMAP
 {
-    public delegate float DistanceCalculation<T>(T x, T y) where T : IUmapDataPoint;
+    public delegate float DistanceCalculation<RawVectorArrayDataPoint>(RawVectorArrayDataPoint x, RawVectorArrayDataPoint y) where RawVectorArrayDataPoint : IUmapDataPoint;
 }

@@ -9,13 +9,13 @@ namespace UMAP
         /// <summary>
         /// Construct a random projection tree based on ``data`` with leaves of size at most ``leafSize``
         /// </summary>
-        public static RandomProjectionTreeNode MakeTree(T[] data, int leafSize, int n, IProvideRandomValues random)
+        public static RandomProjectionTreeNode MakeTree(RawVectorArrayDataPoint[] data, int leafSize, int n, IProvideRandomValues random)
         {
             var indices = Enumerable.Range(0, data.Length).ToArray();
             return MakeEuclideanTree(data, indices, leafSize, n, random);
         }
 
-        private static RandomProjectionTreeNode MakeEuclideanTree(T[] data, int[] indices, int leafSize, int q, IProvideRandomValues random)
+        private static RandomProjectionTreeNode MakeEuclideanTree(RawVectorArrayDataPoint[] data, int[] indices, int leafSize, int q, IProvideRandomValues random)
         {
             if (indices.Length > leafSize)
             {
@@ -50,7 +50,7 @@ namespace UMAP
         /// the basis for a random projection tree, which simply uses this splitting recursively. This particular split uses euclidean distance to determine the hyperplane and which side each data
         /// sample falls on.
         /// </summary>
-        private static (int[] indicesLeft, int[] indicesRight, float[] hyperplaneVector, float hyperplaneOffset) EuclideanRandomProjectionSplit(T[] data, int[] indices, IProvideRandomValues random)
+        private static (int[] indicesLeft, int[] indicesRight, float[] hyperplaneVector, float hyperplaneOffset) EuclideanRandomProjectionSplit(RawVectorArrayDataPoint[] data, int[] indices, IProvideRandomValues random)
         {
             var vectorData = data.Select(x => x.Data).ToArray();
             var dim = vectorData[0].Length;
