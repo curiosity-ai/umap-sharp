@@ -4,13 +4,18 @@ using System.Text;
 
 namespace UMAP
 {
+    /// <inheritdoc/>
     public class RawVectorArrayUmapDataPoint : IUmapDataPoint
     {
+
+        /// <inheritdoc/>
         public RawVectorArrayUmapDataPoint(float[] data)
         {
             Data = data;
         }
 
+
+        /// <inheritdoc/>
         public float[] Data { get; }
 
         /// <summary>

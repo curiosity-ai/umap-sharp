@@ -675,8 +675,10 @@ namespace UMAP
         }
     }
 
+    /// <inheritdoc cref="Umap{T}"/>
     public class Umap : Umap<RawVectorArrayUmapDataPoint>
     {
+        /// <inheritdoc cref="Umap{T}"/>
         public Umap(
                 DistanceCalculation<RawVectorArrayUmapDataPoint> distance = null,
                 IProvideRandomValues random = null,
@@ -689,6 +691,14 @@ namespace UMAP
 
         }
 
-        public int InitializeFit(float[][] a) => base.InitializeFit(a.Cast<RawVectorArrayUmapDataPoint>().ToArray());
+        /// <inheritdoc cref="NearestNeighbors(T[], Umap{RawVectorArrayUmapDataPoint}.ProgressReporter)(float[][])"/>
+        public (int[][] knnIndices, float[][] knnDistances) NearestNeighbors(float[][] x, ProgressReporter progressReporter)
+        {
+            return base.NearestNeighbors(x.Select(c => new RawVectorArrayUmapDataPoint(c)).ToArray(), progressReporter);
+        }
+
+        /// <inheritdoc cref="InitializeFit(float[][])"/>
+        public int InitializeFit(float[][] a) => base.InitializeFit(a.Select(x => new RawVectorArrayUmapDataPoint(x)).ToArray());
+
     }
 }
