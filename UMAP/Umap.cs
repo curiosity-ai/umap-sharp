@@ -19,7 +19,7 @@ namespace UMAP
         private readonly float _setOpMixRatio = 1;
         private readonly float _spread = 1;
 
-        private readonly DistanceCalculation<RawVectorArrayDataPoint> _distanceFn;
+        private readonly DistanceCalculation<T> _distanceFn;
         private readonly IProvideRandomValues _random;
         private readonly int _nNeighbors;
         private readonly int? _customNumberOfEpochs;
@@ -31,7 +31,7 @@ namespace UMAP
 
         // Internal graph connectivity representation
         private SparseMatrix _graph = null;
-        private RawVectorArrayDataPoint[] _x = null;
+        private T[] _x = null;
         private bool _isInitialized = false;
         private Tree<T>.FlatTree[] _rpForest = new Tree<T>.FlatTree[0];
 
@@ -45,7 +45,7 @@ namespace UMAP
         public delegate void ProgressReporter(float progress);
 
         public Umap(
-            DistanceCalculation<RawVectorArrayDataPoint> distance = null,
+            DistanceCalculation<T> distance = null,
             IProvideRandomValues random = null,
             int dimensions = 2,
             int numberOfNeighbors = 15,
@@ -69,7 +69,7 @@ namespace UMAP
         /// Initializes fit by computing KNN and a fuzzy simplicial set, as well as initializing the projected embeddings. Sets the optimization state ahead of optimization steps.
         /// Returns the number of epochs to be used for the SGD optimization.
         /// </summary>
-        public int InitializeFit(RawVectorArrayDataPoint[] x)
+        public int InitializeFit(T[] x)
         {
             // We don't need to reinitialize if we've already initialized for this data
             if ((_x == x) && _isInitialized)
@@ -149,7 +149,7 @@ namespace UMAP
         /// <summary>
         /// Compute the ``nNeighbors`` nearest points for each data point in ``X`` - this may be exact, but more likely is approximated via nearest neighbor descent.
         /// </summary>
-        internal (int[][] knnIndices, float[][] knnDistances) NearestNeighbors(RawVectorArrayDataPoint[] x, ProgressReporter progressReporter)
+        internal (int[][] knnIndices, float[][] knnDistances) NearestNeighbors(T[] x, ProgressReporter progressReporter)
         {
             var metricNNDescent = NNDescent<T>.MakeNNDescent(_distanceFn, _random);
             progressReporter(0.05f);
@@ -180,7 +180,7 @@ namespace UMAP
         /// to the data. This is done by locally approximating geodesic distance at each point, creating a fuzzy simplicial set for each such point, and then combining all the local fuzzy
         /// simplicial sets into a global one via a fuzzy union.
         /// </summary>
-        private SparseMatrix FuzzySimplicialSet(RawVectorArrayDataPoint[] x, int nNeighbors, float setOpMixRatio, ProgressReporter progressReporter)
+        private SparseMatrix FuzzySimplicialSet(T[] x, int nNeighbors, float setOpMixRatio, ProgressReporter progressReporter)
         {
             var knnIndices = _knnIndices ?? new int[0][];
             var knnDistances = _knnDistances ?? new float[0][];
@@ -629,7 +629,7 @@ namespace UMAP
 
         public static class DistanceFunctions
         {
-            public static float Cosine(RawVectorArrayDataPoint lhs, RawVectorArrayDataPoint rhs)
+            public static float Cosine(T lhs, T rhs)
             {
                 var lhsVal = lhs.Data;
                 var rhsVal = rhs.Data;
