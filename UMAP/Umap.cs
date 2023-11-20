@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace UMAP
 {
-    public sealed class Umap<T> where T : IUmapDataPoint
+    public class Umap<T> where T : IUmapDataPoint
     {
         private const float SMOOTH_K_TOLERANCE = 1e-5f;
         private const float MIN_K_DIST_SCALE = 1e-3f;
@@ -673,5 +673,22 @@ namespace UMAP
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public float GetDistanceFactor(float distSquared) => 1f / ((0.001f + distSquared) * (float)(A * Math.Pow(distSquared, B) + 1));
         }
+    }
+
+    public class Umap : Umap<RawVectorArrayUmapDataPoint>
+    {
+        public Umap(
+                DistanceCalculation<RawVectorArrayUmapDataPoint> distance = null,
+                IProvideRandomValues random = null,
+                int dimensions = 2,
+                int numberOfNeighbors = 15,
+                int? customNumberOfEpochs = null,
+                ProgressReporter progressReporter = null)
+                    : base(distance, random, dimensions, numberOfNeighbors, customNumberOfEpochs, progressReporter)
+        {
+
+        }
+
+        public int InitializeFit(float[][] a) => base.InitializeFit(a.Cast<RawVectorArrayUmapDataPoint>().ToArray());
     }
 }
