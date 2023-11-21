@@ -691,13 +691,13 @@ namespace UMAP
 
         }
 
-        /// <inheritdoc cref="NearestNeighbors(T[], Umap{RawVectorArrayUmapDataPoint}.ProgressReporter)(float[][])"/>
+        /// <inheritdoc cref="Umap{T}.NearestNeighbors(T[], Umap{T}.ProgressReporter)"/>
         public (int[][] knnIndices, float[][] knnDistances) NearestNeighbors(float[][] x, ProgressReporter progressReporter)
         {
             return base.NearestNeighbors(x.Select(c => new RawVectorArrayUmapDataPoint(c)).ToArray(), progressReporter);
         }
 
-        /// <inheritdoc cref="InitializeFit(float[][])"/>
+        /// <inheritdoc cref="Umap{T}.InitializeFit(T[])"/>
         public int InitializeFit(float[][] a) => base.InitializeFit(a.Select(x => new RawVectorArrayUmapDataPoint(x)).ToArray());
 
     }
