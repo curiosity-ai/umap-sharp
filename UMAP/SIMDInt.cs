@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace UMAP
 {
-    internal static class SIMDint
+    internal static class SIMDint<T>
     {
         private static readonly int _vs1 = Vector<int>.Count;
         private static readonly int _vs2 = 2 * Vector<int>.Count;
@@ -70,8 +70,8 @@ namespace UMAP
             float a2 = 2 * a;
             float an = -a;
             random.NextFloats(data);
-            SIMD.Multiply(ref data, a2);
-            SIMD.Add(ref data, an);
+            SIMD<T>.Multiply(ref data, a2);
+            SIMD<T>.Add(ref data, an);
         }
     }
 }

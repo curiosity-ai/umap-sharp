@@ -1,12 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using static UMAP.Heaps;
 
 namespace UMAP
 {
-    internal static class NNDescent
+    internal static class NNDescent<T> where T : IUmapDataPoint
     {
         public delegate (int[][] indices, float[][] weights) NNDescentFn(
-            float[][] data,
+            T[] data,
             int[][] leafArray,
             int nNeighbors,
             int nIters = 10,
@@ -20,7 +21,7 @@ namespace UMAP
         /// <summary>
         /// Create a version of nearest neighbor descent.
         /// </summary>
-        public static NNDescentFn MakeNNDescent(DistanceCalculation distanceFn, IProvideRandomValues random)
+        public static NNDescentFn MakeNNDescent(DistanceCalculation<T> distanceFn, IProvideRandomValues random)
         {
             return (data, leafArray, nNeighbors, nIters, maxCandidates, delta, rho, rpTreeInit, startingIteration) =>
             {

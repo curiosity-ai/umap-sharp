@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
 namespace UMAP
 {
-    internal static class SIMD
+    internal static class SIMD<T>
     {
         private static readonly int _vs1 = Vector<float>.Count;
         private static readonly int _vs2 = 2 * Vector<float>.Count;

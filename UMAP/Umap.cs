@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using static UMAP.NNDescent;
-using static UMAP.Tree;
 
 namespace UMAP
 {
-    public sealed class Umap
+    public class Umap<T> where T : IUmapDataPoint
     {
         private const float SMOOTH_K_TOLERANCE = 1e-5f;
         private const float MIN_K_DIST_SCALE = 1e-3f;
@@ -21,7 +19,7 @@ namespace UMAP
         private readonly float _setOpMixRatio = 1;
         private readonly float _spread = 1;
 
-        private readonly DistanceCalculation _distanceFn;
+        private readonly DistanceCalculation<T> _distanceFn;
         private readonly IProvideRandomValues _random;
         private readonly int _nNeighbors;
         private readonly int? _customNumberOfEpochs;
@@ -33,9 +31,9 @@ namespace UMAP
 
         // Internal graph connectivity representation
         private SparseMatrix _graph = null;
-        private float[][] _x = null;
+        private T[] _x = null;
         private bool _isInitialized = false;
-        private FlatTree[] _rpForest = new FlatTree[0];
+        private Tree<T>.FlatTree[] _rpForest = new Tree<T>.FlatTree[0];
 
         // Projected embedding
         private float[] _embedding;
@@ -47,7 +45,7 @@ namespace UMAP
         public delegate void ProgressReporter(float progress);
 
         public Umap(
-            DistanceCalculation distance = null,
+            DistanceCalculation<T> distance = null,
             IProvideRandomValues random = null,
             int dimensions = 2,
             int numberOfNeighbors = 15,
@@ -71,7 +69,7 @@ namespace UMAP
         /// Initializes fit by computing KNN and a fuzzy simplicial set, as well as initializing the projected embeddings. Sets the optimization state ahead of optimization steps.
         /// Returns the number of epochs to be used for the SGD optimization.
         /// </summary>
-        public int InitializeFit(float[][] x)
+        public int InitializeFit(T[] x)
         {
             // We don't need to reinitialize if we've already initialized for this data
             if ((_x == x) && _isInitialized)
@@ -151,9 +149,9 @@ namespace UMAP
         /// <summary>
         /// Compute the ``nNeighbors`` nearest points for each data point in ``X`` - this may be exact, but more likely is approximated via nearest neighbor descent.
         /// </summary>
-        internal (int[][] knnIndices, float[][] knnDistances) NearestNeighbors(float[][] x, ProgressReporter progressReporter)
+        internal (int[][] knnIndices, float[][] knnDistances) NearestNeighbors(T[] x, ProgressReporter progressReporter)
         {
-            var metricNNDescent = MakeNNDescent(_distanceFn, _random);
+            var metricNNDescent = NNDescent<T>.MakeNNDescent(_distanceFn, _random);
             progressReporter(0.05f);
             var nTrees = 5 + Round(Math.Sqrt(x.Length) / 20);
             var nIters = Math.Max(5, (int)Math.Floor(Math.Round(Math.Log(x.Length, 2))));
@@ -164,12 +162,13 @@ namespace UMAP
                 .Select(i =>
                 {
                     forestProgressReporter((float)i / nTrees);
-                    return FlattenTree(MakeTree(x, leafSize, i, _random), leafSize);
+                    return Tree<T>.FlattenTree(Tree<T>.MakeTree(x, leafSize, i, _random), leafSize);
                 })
                 .ToArray();
-            var leafArray = MakeLeafArray(_rpForest);
+            var leafArray = Tree<T>.MakeLeafArray(_rpForest);
             progressReporter(0.45f);
             var nnDescendProgressReporter = ScaleProgressReporter(progressReporter, 0.5f, 1);
+
             return metricNNDescent(x, leafArray, _nNeighbors, nIters, startingIteration: (i, max) => nnDescendProgressReporter((float)i / max));
 
             // Handle python3 rounding down from 0.5 discrpancy
@@ -181,7 +180,7 @@ namespace UMAP
         /// to the data. This is done by locally approximating geodesic distance at each point, creating a fuzzy simplicial set for each such point, and then combining all the local fuzzy
         /// simplicial sets into a global one via a fuzzy union.
         /// </summary>
-        private SparseMatrix FuzzySimplicialSet(float[][] x, int nNeighbors, float setOpMixRatio, ProgressReporter progressReporter)
+        private SparseMatrix FuzzySimplicialSet(T[] x, int nNeighbors, float setOpMixRatio, ProgressReporter progressReporter)
         {
             var knnIndices = _knnIndices ?? new int[0][];
             var knnDistances = _knnDistances ?? new float[0][];
@@ -363,7 +362,7 @@ namespace UMAP
             // We're not computing the spectral initialization in this implementation until we determine a better eigenvalue/eigenvector computation approach
 
             _embedding = new float[graph.Dims.rows * _optimizationState.Dim];
-            SIMDint.Uniform(ref _embedding, 10, _random);
+            SIMDint<T>.Uniform(ref _embedding, 10, _random);
 
             // Get graph data in ordered way...
             var weights = new List<float>();
@@ -382,7 +381,7 @@ namespace UMAP
             return (head.ToArray(), tail.ToArray(), MakeEpochsPerSample(weights.ToArray(), nEpochs));
         }
 
-        private void ShuffleTogether<T, T2, T3>(List<T> list, List<T2> other, List<T3> weights)
+        private void ShuffleTogether<T1, T2, T3>(List<T1> list, List<T2> other, List<T3> weights)
         {
             int n = list.Count;
             if (other.Count != n) { throw new Exception(); }
@@ -390,7 +389,7 @@ namespace UMAP
             {
                 n--;
                 int k = _random.Next(0, n + 1);
-                T value = list[k];
+                T1 value = list[k];
                 list[k] = list[n];
                 list[n] = value;
 
@@ -630,43 +629,76 @@ namespace UMAP
 
         public static class DistanceFunctions
         {
-            public static float Cosine(float[] lhs, float[] rhs)
+            public static float Cosine(T lhs, T rhs)
             {
-                return 1 - (SIMD.DotProduct(ref lhs, ref rhs) / (SIMD.Magnitude(ref lhs) * SIMD.Magnitude(ref rhs)));
+                var lhsVal = lhs.Data;
+                var rhsVal = rhs.Data;
+                return 1 - (SIMD<T>.DotProduct(ref lhsVal, ref rhsVal) / (SIMD<T>.Magnitude(ref lhsVal) * SIMD<T>.Magnitude(ref rhsVal)));
             }
 
-            public static float CosineForNormalizedVectors(float[] lhs, float[] rhs)
+            public static float CosineForNormalizedVectors(T lhs, T rhs)
             {
-                return 1 - SIMD.DotProduct(ref lhs, ref rhs);
+                var lhsVal = lhs.Data;
+                var rhsVal = rhs.Data;
+                return 1 - SIMD<T>.DotProduct(ref lhsVal, ref rhsVal);
             }
 
-            public static float Euclidean(float[] lhs, float[] rhs)
+            public static float Euclidean(T lhs, T rhs)
             {
-                return (float)Math.Sqrt(SIMD.Euclidean(ref lhs, ref rhs)); // TODO: Replace with netcore3 MathF class when the framework is available
+                var lhsVal = lhs.Data;
+                var rhsVal = rhs.Data;
+                return (float)Math.Sqrt(SIMD<T>.Euclidean(ref lhsVal, ref rhsVal)); // TODO: Replace with netcore3 MathF class when the framework is available
             }
         }
 
         private sealed class OptimizationState
         {
-            public int CurrentEpoch                 =  0;
-            public int[] Head                       =  new int[0];
-            public int[] Tail                       =  new int[0];
-            public float[] EpochsPerSample          =  new float[0];
-            public float[] EpochOfNextSample        =  new float[0];
-            public float[] EpochOfNextNegativeSample=  new float[0];
-            public float[] EpochsPerNegativeSample  =  new float[0];
-            public bool MoveOther                   =  true;
-            public float InitialAlpha               =  1;
-            public float Alpha                      =  1;
-            public float Gamma                      =  1;
-            public float A                          =  1.5769434603113077f;
-            public float B                          =  0.8950608779109733f;
-            public int Dim                          =  2;
-            public int NEpochs                      =  500;
-            public int NVertices                    =  0;
+            public int CurrentEpoch = 0;
+            public int[] Head = new int[0];
+            public int[] Tail = new int[0];
+            public float[] EpochsPerSample = new float[0];
+            public float[] EpochOfNextSample = new float[0];
+            public float[] EpochOfNextNegativeSample = new float[0];
+            public float[] EpochsPerNegativeSample = new float[0];
+            public bool MoveOther = true;
+            public float InitialAlpha = 1;
+            public float Alpha = 1;
+            public float Gamma = 1;
+            public float A = 1.5769434603113077f;
+            public float B = 0.8950608779109733f;
+            public int Dim = 2;
+            public int NEpochs = 500;
+            public int NVertices = 0;
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public float GetDistanceFactor(float distSquared) => 1f / ((0.001f + distSquared) * (float)(A * Math.Pow(distSquared, B) + 1));
         }
+    }
+
+    /// <inheritdoc cref="Umap{T}"/>
+    public class Umap : Umap<RawVectorArrayUmapDataPoint>
+    {
+        /// <inheritdoc cref="Umap{T}"/>
+        public Umap(
+                DistanceCalculation<RawVectorArrayUmapDataPoint> distance = null,
+                IProvideRandomValues random = null,
+                int dimensions = 2,
+                int numberOfNeighbors = 15,
+                int? customNumberOfEpochs = null,
+                ProgressReporter progressReporter = null)
+                    : base(distance, random, dimensions, numberOfNeighbors, customNumberOfEpochs, progressReporter)
+        {
+
+        }
+
+        /// <inheritdoc cref="Umap{T}.NearestNeighbors(T[], Umap{T}.ProgressReporter)"/>
+        public (int[][] knnIndices, float[][] knnDistances) NearestNeighbors(float[][] x, ProgressReporter progressReporter)
+        {
+            return base.NearestNeighbors(x.Select(c => new RawVectorArrayUmapDataPoint(c)).ToArray(), progressReporter);
+        }
+
+        /// <inheritdoc cref="Umap{T}.InitializeFit(T[])"/>
+        public int InitializeFit(float[][] a) => base.InitializeFit(a.Select(x => new RawVectorArrayUmapDataPoint(x)).ToArray());
+
     }
 }
