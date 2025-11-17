@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>UMAP</PackageId>
-    <TargetFrameworks>netstandard2.0;netstandard2.1;net7.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;netstandard2.1;net7.0;net8.0;net9.0;net10.0</TargetFrameworks>
     <RootNamespace>UMAP</RootNamespace>
     <AssemblyName>UMAP</AssemblyName>
     <Authors>Curiosity GmbH</Authors>
@@ -14,7 +14,7 @@
     <RepositoryUrl>https://github.com/curiosity-ai/umap-sharp</RepositoryUrl>
     <PackageTags>UMAP, embeddings projection, dimensionality reduction, TSNE, data science, embeddings, word2vec</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Copyright>(c) Copyright 2022 Curiosity GmbH - all right reserved</Copyright>
+    <Copyright>(c) Copyright 2025 Curiosity GmbH - all right reserved</Copyright>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 

@@ -12,10 +12,10 @@ steps:
 - task: NuGetToolInstaller@1
 
 - task: UseDotNet@2
-  displayName: 'Use .NET 7.0 SDK'
+  displayName: 'Use .NET 10.0 SDK'
   inputs:
     packageType: sdk
-    version: 7.x
+    version: 10.x
     includePreviewVersions: false
     installationPath: $(Agent.ToolsDirectory)\dotnet
     
