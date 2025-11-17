@@ -514,7 +514,7 @@ namespace UMAP
                 }
             }
 
-            _optimizationState.Alpha = _optimizationState.InitialAlpha * (1f - n / _optimizationState.NEpochs);
+            _optimizationState.Alpha = _optimizationState.InitialAlpha * (1f - ((float)n / _optimizationState.NEpochs));
             _optimizationState.CurrentEpoch += 1;
 
             void Iterate(int i)
